@@ -1,0 +1,6 @@
+<launch>
+<!-- View the structure of the sensor_msgs/LaserScan message type -->
+<param name="wall_dist" value="0.5" type="double" />
+<arg name="robot_ns" default value="robot0">
+<node name="robot_publisher" type="cpp" pkg="robot_no_crash" ns=robot_ns/>
+</launch>
