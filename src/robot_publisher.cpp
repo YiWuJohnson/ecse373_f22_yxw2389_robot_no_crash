@@ -6,16 +6,29 @@
 #include <sstream>
 
 ros::Publisher *p_pub;
-double wall_dis;
+int stop_moving = 0;
 
-void chatterCallback(const geometry_msgs::Twist::ConstPtr& msg)
+void desvelCallback(const geometry_msgs::Twist::ConstPtr& msg)
 {
-    p_pub->publish(msg);
-}
-
-void lidarCallback(const sensor_msgs::LaserScan::ConstPtr& msg)
+  geometry_msgs::Twist to send = *msg;
+  if(stop_moving & (to_send.linear.x > 0.0 )){
+    to_send.linear.x =0.0 ;
+    ROS_INFO_THROTTLE(0.5, "Stop moving !!!")
+  }
+  p_pub -> publish(to_send);
+ }
+void laserScanCallback(const sensor_msgs::LaserScan::ConstPtr& msg)
 {
-    if(msg->range_min < wall_dis){ROS_INFO("stop going");}
+  stop_moving=0;
+   for(int indx = 45 ; indx < 225; indx ++)
+   {
+     if(msg->ranges[indx] < 0.75){
+        stop_moving =1; break;
+       }
+   };
+   if (stop_moving){
+     ROS_INFO_THROTTLE(0.5, "Stop moving !!!")
+   };
 }
 
 int main(int argc, char **argv)
@@ -50,15 +63,13 @@ int main(int argc, char **argv)
 }
   // Announce the value of wall_dist after the first call to the Parameter Server
   ROS_INFO_ONCE("wall_dist is now: [%2.2f]", wall_dist);
-  wall_dis = wall_dist;
-  ros::Subscriber sub = n.subscribe<geometry_msgs::Twist>("des_vel", 50, chatterCallback);
-  ros::Subscriber lidarsub = n.subscribe<sensor_msgs::LaserScan>("lidar_1", 50, lidarCallback);
-  ros::Publisher pub = n.advertise<geometry_msgs::Twist>("cmd_vel", 50);
-  p_pub = &pub;
+  ros::Subscriber sub = n.subscribe("robot0/laser_0", 10, LaserScanCallback);
+  ros::Subscriber sub1 = n.subscribe("robot0/des_vel", 10, desvelCallback);
+  ros::Publisher cmd_vel_pub = n.advertise<geometry_msgs::Twist>("robot0/cmd_vel", 1000);
+
+  p_pub = &cmd_vel_pub ;
 
   ros::Rate loop_rate(10);
-
-  geometry_msgs::Twist msg;
 
   pub.publish(msg);
 
