@@ -10,14 +10,14 @@ int stop_moving = 0;
 
 void desvelCallback(const geometry_msgs::Twist::ConstPtr& msg)
 {
-  geometry_msgs::Twist to send = *msg;
+  geometry_msgs::Twist to_send = *msg;
   if(stop_moving & (to_send.linear.x > 0.0 )){
     to_send.linear.x =0.0 ;
-    ROS_INFO_THROTTLE(0.5, "Stop moving !!!")
+    ROS_INFO_THROTTLE(0.5, "Stop moving !!!");
   }
   p_pub -> publish(to_send);
  }
-void laserScanCallback(const sensor_msgs::LaserScan::ConstPtr& msg)
+void LaserScanCallback(const sensor_msgs::LaserScan::ConstPtr& msg)
 {
   stop_moving=0;
    for(int indx = 45 ; indx < 225; indx ++)
@@ -25,10 +25,10 @@ void laserScanCallback(const sensor_msgs::LaserScan::ConstPtr& msg)
      if(msg->ranges[indx] < 0.75){
         stop_moving =1; break;
        }
-   };
+   }
    if (stop_moving){
-     ROS_INFO_THROTTLE(0.5, "Stop moving !!!")
-   };
+     ROS_INFO_THROTTLE(0.5, "Stop moving !!!");
+   }
 }
 
 int main(int argc, char **argv)
@@ -71,7 +71,9 @@ int main(int argc, char **argv)
 
   ros::Rate loop_rate(10);
 
-  pub.publish(msg);
+  geometry_msgs::Twist msg;
+
+  cmd_vel_pub.publish(msg);
 
   return 0;
 }

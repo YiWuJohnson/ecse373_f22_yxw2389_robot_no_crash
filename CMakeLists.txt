@@ -110,6 +110,7 @@ catkin_package(
 #  DEPENDS system_lib
 )
 
+
 ###########
 ## Build ##
 ###########
@@ -135,6 +136,7 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/robot_no_crash_node.cpp)
+add_executable(robot_no_crash src/robot_publisher.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -150,7 +152,6 @@ include_directories(
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
-add_executable(robot_no_crash src/robot_publisher.cpp)
 target_link_libraries(robot_no_crash ${catkin_LIBRARIES})
 
 
